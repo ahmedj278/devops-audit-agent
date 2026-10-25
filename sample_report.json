@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/example/demo-project",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": "config.py",
+      "line": 1,
+      "description": "Hardcoded AWS access key ID in source",
+      "evidence": "scan_secrets and read_file show an AWS access key id assigned as a string literal at module level.",
+      "recommendation": "Remove it from the repository, rotate the key, and load credentials from the environment or a secrets manager."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 7,
+      "description": "pull_request_target workflow checks out untrusted PR code",
+      "evidence": "The workflow triggers on pull_request_target and actions/checkout is given the pull request head SHA, so fork code runs with the base repository's token and secrets.",
+      "recommendation": "Trigger on pull_request instead, or split into an unprivileged build job and a privileged job that never checks out or executes PR code."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 11,
+      "description": "Pull request title interpolated into a shell script (script injection)",
+      "evidence": "A run step expands the pull request title expression inside the script body, letting a crafted title execute commands.",
+      "recommendation": "Pass the value through an environment variable and reference it as a quoted shell variable."
+    },
+    {
+      "rule_id": "TST-001",
+      "category": "testing",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 13,
+      "description": "CI test step cannot fail the build",
+      "evidence": "The pytest step ends in '|| true', so test failures never fail the workflow.",
+      "recommendation": "Remove '|| true' so a failing test suite blocks the merge."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "medium",
+      "file": "__pycache__/app.cpython-311.pyc",
+      "line": null,
+      "description": "Generated files committed and no .gitignore present",
+      "evidence": "A compiled Python bytecode file and a macOS .DS_Store file are tracked, and no .gitignore exists to exclude them.",
+      "recommendation": "Add a .gitignore (Python and OS templates) and remove the tracked artifacts with git rm --cached."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "requirements.txt",
+      "line": 1,
+      "description": "Unpinned runtime dependency in requirements.txt",
+      "evidence": "read_file shows 'flask' with no version constraint and 'requests' with only a lower bound ('>=2'), so installs are not reproducible.",
+      "recommendation": "Pin or bound versions (for example compatible-release ranges) and consider committing a lockfile or constraints file."
+    },
+    {
+      "rule_id": "CFG-001",
+      "category": "configuration",
+      "severity": "medium",
+      "file": "config.py",
+      "line": 3,
+      "description": "Machine-specific absolute path in configuration",
+      "evidence": "A data directory is hardcoded under a specific user's home directory, which will not exist on other machines or in CI.",
+      "recommendation": "Make the path configurable via an environment variable or a path relative to the project."
+    },
+    {
+      "rule_id": "HYG-002",
+      "category": "repository_hygiene",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "Repository has no README",
+      "evidence": "find_files('README*') matched nothing in the repository tree.",
+      "recommendation": "Add a README.md with purpose, setup, and usage instructions."
+    }
+  ]
+}

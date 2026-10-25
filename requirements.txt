@@ -1,0 +1,5 @@
+anthropic>=0.40
+openai>=1.50
+PyYAML>=6.0
+python-dotenv>=1.0
+ruff>=0.5
